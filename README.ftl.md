@@ -55,6 +55,7 @@ The key piece of this service is how `findPage` has been annotated with `@Cachea
 
 > **Note:** You are required to supply the name of the cache.
 
+This demonstrates the value of caching certain calls. If your application is constantly looking up the same data which is expensive to calculate, caching the results can improve your performance dramatically.
 
 Make the application executable
 -------------------------------
