@@ -5,7 +5,7 @@
 What you'll build
 -----------------
 
-This guide walks you through the process of turning on caching sections of code. In this case, you'll see how to request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the repetitive call to Facebook.
+This guide walks you through the process of turning on caching sections of code. You'll see how to request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the repetitive call to Facebook.
 
 What you'll need
 ----------------
@@ -35,13 +35,13 @@ Set up the project
 <a name="initial"></a>
 Create a bindable object for fetching data
 ------------------------------------------
-Now that you've set up the project and build system, you can focus on defining an object to capture the bits needed when pulling data from Facebook.
+Now that you've set up the project and build system, you can focus on defining an object to capture the bits you need to pull data from Facebook.
 
     <@snippet path="src/main/java/hello/Page.java" prefix="complete"/>
     
 The `Page` class has `name` and `website` properties along with standard getters and setters. These are the two attributes you will gather further along in this guide.
 
-You'll notice the class is marked as `@JsonIgnoreProperties(ignoreUnknown=true)`. That means that even though there are other attributes that will be retrieved you are going to ignore them.
+Note that the class is marked as `@JsonIgnoreProperties(ignoreUnknown=true)`. That means that even though other attributes will be retrieved, you will ignore them.
 
 Query Facebook for data
 -----------------------
@@ -51,11 +51,11 @@ Your next step is to create a service that queries Facebook for data about pages
     
 This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but as you can see, it returns a `Page` instead of a `String`.
 
-The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://static.springsource.org/spring/docs/3.2.2.RELEASE/spring-framework-reference/html/cache.html) intercepts the call to this method to check if it's already been called. If so, it returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
+The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://static.springsource.org/spring/docs/3.2.2.RELEASE/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
 
-> **Note:** You are required to supply the name of the cache.
+> **Note:** You must supply the name of the cache.
 
-This demonstrates the value of caching certain calls. If your application is constantly looking up the same data which is expensive to calculate, caching the results can improve your performance dramatically.
+This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
 
 Make the application executable
 -------------------------------
@@ -93,16 +93,16 @@ This application uses the **maven-shade-plugin**. By adding the following code t
 
     <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
     
-At the top of our configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds some important beans in the background to support caching with GemFire as your data store.
+At the top of the configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds important beans in the background to support caching with GemFire as your data store.
 
 The first bean is an instance of `FacebookLookupService`.
 
 The next three are needed to connect with GemFire and provide caching.
 - `cacheFactoryBean` creates a GemFire cache.
-- `localRegionFactoryBean` defines a GemFire region inside the cache. It is geared to be named "hello", which must match our usage of `@Cacheable("hello")`.
-- 'cacheManager` is needed to support Spring's caching abstraction.
+- `localRegionFactoryBean` defines a GemFire region inside the cache. It is geared to be named "hello", which must match your usage of `@Cacheable("hello")`.
+- 'cacheManager` supports Spring's caching abstraction.
 
-The `main()` method creates an application context based on the surrounding class. It fetches a `FacebookLookupService`, and proceeds to lookup some pages on Facebook. It first looks for the **SpringSource** page twice. The second time should definitely be faster. It then looks for the **Pivotal** page, and you can see that the time is longer, indicating that things are being cached based on the input parameters to `findPage`.
+The `main()` method creates an application context based on the surrounding class. It fetches a `FacebookLookupService`, and proceeds to look up some pages on Facebook. It first looks for the **SpringSource** page twice. The second time should definitely be faster. It then looks for the **Pivotal** page, and you can see that the time is longer, indicating that things are being cached based on the input parameters to `findPage`.
 
 The actual call to the `FacebookLookupService` is wrapped in a separate method to capture the process of timing the call. This lets you see exactly how long any one lookup is taking.
 
@@ -127,4 +127,4 @@ Found Page [name=Pivotal, website=http://www.gopivotal.com], and it only took 78
 Summary
 -------
 
-Congrats! You've just built a service that performed an expensive operation and tagged it to cache results.
+Congratulations! You've just built a service that performed an expensive operation and tagged it so that it will cache results.
