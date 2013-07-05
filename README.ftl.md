@@ -4,8 +4,7 @@
 
 What you'll build
 -----------------
-
-This guide walks you through the process of turning on caching sections of code. You'll see how to request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the repetitive call to Facebook.
+This guide walks through the process of using the GemFire's data fabric to cache certain calls from your code. To do this, you'll request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the expensive call to Facebook.
 
 What you'll need
 ----------------
@@ -14,8 +13,7 @@ What you'll need
  - <@prereq_editor_jdk_buildtools/>
 
 
-## <@how_to_complete_this_guide/>
-
+## <@how_to_complete_this_guide jump_ahead="Create a bindable object for fetching data"/>
 
 <a name="scratch"></a>
 Set up the project
@@ -41,7 +39,7 @@ Now that you've set up the project and build system, you can focus on defining a
     
 The `Page` class has `name` and `website` properties along with standard getters and setters. These are the two attributes you will gather further along in this guide.
 
-Note that the class is marked as `@JsonIgnoreProperties(ignoreUnknown=true)`. That means that even though other attributes will be retrieved, you will ignore them.
+Note that the class is marked as `@JsonIgnoreProperties(ignoreUnknown=true)`. That means that even though other attributes will be retrieved, they'll be ignored.
 
 Query Facebook for data
 -----------------------
@@ -49,17 +47,17 @@ Your next step is to create a service that queries Facebook for data about pages
 
     <@snippet path="src/main/java/hello/FacebookLookupService.java" prefix="complete"/>
     
-This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but as you can see, it returns a `Page` instead of a `String`.
+This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but Spring binds the data to produce a `Page` object.
 
 The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://static.springsource.org/spring/docs/3.2.2.RELEASE/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
 
-> **Note:** You must supply the name of the cache.
+> **Note:** You must supply the name of the cache. We named it "hello" for demonstration purposes, but in production, you should probably pick a more descriptive name. This also means different methods can be associated with different caches. This is useful if you have different configuration settings for each cache.
 
-This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
+Later on when you run the code, you will see the time it takes to run each call and be able to discern whether or not the result was cached. This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
 
 Make the application executable
 -------------------------------
-This application uses the **maven-shade-plugin**. By adding the following code to pom.xml, you can build a runnable uber jar.
+This application uses the **maven-shade-plugin**. By adding the following code to pom.xml, you can build a runnable uber jar, as you'll see down below.
 
 ```xml
 	<build>
@@ -93,18 +91,24 @@ This application uses the **maven-shade-plugin**. By adding the following code t
 
     <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
     
-At the top of the configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds important beans in the background to support caching with GemFire as your data store.
+Your runnable `main` application is combined with all the configuration details in one class.
+    
+At the top of the configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds important beans in the background to support caching with GemFire.
 
 The first bean is an instance of `FacebookLookupService`.
 
 The next three are needed to connect with GemFire and provide caching.
 - `cacheFactoryBean` creates a GemFire cache.
 - `localRegionFactoryBean` defines a GemFire region inside the cache. It is geared to be named "hello", which must match your usage of `@Cacheable("hello")`.
-- 'cacheManager` supports Spring's caching abstraction.
+- `cacheManager` supports Spring's caching abstraction.
 
-The `main()` method creates an application context based on the surrounding class. It fetches a `FacebookLookupService`, and proceeds to look up some pages on Facebook. It first looks for the **SpringSource** page twice. The second time should definitely be faster. It then looks for the **Pivotal** page, and you can see that the time is longer, indicating that things are being cached based on the input parameters to `findPage`.
+> **Note:** Two of these beans are [factory beans](http://blog.springsource.org/2011/08/09/whats-a-factorybean/). This is a common pattern used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
 
-The actual call to the `FacebookLookupService` is wrapped in a separate method to capture the process of timing the call. This lets you see exactly how long any one lookup is taking.
+The `main()` method creates an application context based on the surrounding class. It fetches a `FacebookLookupService`, and proceeds to look up some pages on Facebook. It first looks for the **SpringSource** page twice. As you'll see when you run the application later in this guide, the first time it runs, it will take a certain amount of time to retrieve data about the Facebook page. The second time should take almost no time at all because the first lookup of that page's information was cached. 
+
+It then looks for the **GoPivotal** page, for the first time. The lookup time will also be noticeable, i.e. not close to zero, showing this page isn't cached. That is because the caching is linked to the input parameters of `findPage`.
+
+For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
 
 
 Run the service
@@ -123,6 +127,8 @@ Found Page [name=SpringSource, website=http://www.springsource.com], and it only
 
 Found Page [name=Pivotal, website=http://www.gopivotal.com], and it only took 78 ms to find out!
 ```
+
+From this you can see that the first call to Facebook for the SpringSource page took 620ms, which the second call took 0ms. That clearly shows that the second call was cached and never actually hit Facebook. But when GoPivotal's page was retrieved, it took 78ms, which while faster than 620ms, was definitely NOT the result of retrieving cached data.
 
 Summary
 -------
