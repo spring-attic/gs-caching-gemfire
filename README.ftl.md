@@ -110,13 +110,7 @@ It then looks for the **GoPivotal** page, for the first time. The lookup time wi
 
 For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
 
-
-Run the service
----------------
-
-Run your service with `java -jar` at the command line:
-
-    java -jar target/gs-caching-gemfire-complete-0.1.0.jar
+<@run_the_application module="service"/>
 
 Logging output is displayed. The service should be up and running within a few seconds.
 
