@@ -186,9 +186,10 @@ The key piece of this service is how `findPage` has been annotated with `@Cachea
 
 Later on when you run the code, you will see the time it takes to run each call and be able to discern whether or not the result was cached. This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
 
-Make the application executable
--------------------------------
-This application uses the **maven-shade-plugin**. By adding the following code to pom.xml, you can build a runnable uber jar, as you'll see down below.
+Build the application
+------------------------
+
+To build this application, you need to add some extra bits to your pom.xml file.
 
 ```xml
 	<build>
@@ -217,6 +218,16 @@ This application uses the **maven-shade-plugin**. By adding the following code t
 		</plugins>
 	</build>
 ```
+
+The [Maven Shade plugin][maven-shade-plugin] extracts classes from all jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
+
+Now run the following to produce a single executable JAR file containing all necessary dependency classes and resources:
+
+    mvn package
+
+[maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
+
+> **Note:** The procedure above will create a runnable JAR. You can also opt to [build a classic WAR file](/guides/gs/gs-convert-jar-to-war) instead.
 
 ### Create a main class
 
