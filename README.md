@@ -59,7 +59,7 @@ In a project directory of your choosing, create the following subdirectory struc
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.springframework</groupId>
-    <artifactId>gs-caching-gemfire-initial</artifactId>
+    <artifactId>gs-caching-gemfire</artifactId>
     <version>0.1.0</version>
 
     <dependencies>
