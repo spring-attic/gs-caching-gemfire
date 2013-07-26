@@ -1,6 +1,4 @@
 
-# Getting Started: Caching Data with GemFire
-
 What you'll build
 -----------------
 This guide walks through the process of using the GemFire's data fabric to cache certain calls from your code. To do this, you'll request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the expensive call to Facebook.
