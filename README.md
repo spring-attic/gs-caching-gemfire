@@ -106,7 +106,7 @@ In a project directory of your choosing, create the following subdirectory struc
 </project>
 ```
 
-TODO: mention that we're using Spring Bootstrap's [_starter POMs_](../gs-bootstrap-starter) here.
+TODO: mention that we're using Spring Boot's [_starter POMs_](../gs-bootstrap-starter) here.
 
 Note to experienced Maven users who are unaccustomed to using an external parent project: you can take it out later, it's just there to reduce the amount of code you have to write to get started.
 
