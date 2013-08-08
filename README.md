@@ -1,7 +1,8 @@
+This guide walks through the process of using the GemFire's data fabric to cache certain calls from your code.
 
 What you'll build
 -----------------
-This guide walks through the process of using the GemFire's data fabric to cache certain calls from your code. To do this, you'll request publicly visible data from Facebook, cache it, and then see that fetching the same thing again eliminates the expensive call to Facebook.
+You'll request publicly visible data from Facebook, cache it in GemFire, and then see that fetching the same thing again eliminates the expensive call to Facebook.
 
 What you'll need
 ----------------
@@ -36,7 +37,7 @@ To **skip the basics**, do the following:
 Set up the project
 ------------------
 
-First you set up a basic build script. You can use any build system you like when building apps with Spring, but the code you need to work with [Maven](https://maven.apache.org) and [Gradle](http://gradle.org) is included here. If you're not familiar with either, refer to [Building Java Projects with Maven](/guides/gs/maven/) or [Building Java Projects with Gradle](/guides/gs/gradle/).
+First you set up a basic build script. You can use any build system you like when building apps with Spring, but the code you need to work with [Maven](https://maven.apache.org) and [Gradle](http://gradle.org) is included here. If you're not familiar with either, refer to [Building Java Projects with Maven](/guides/gs/maven) or [Building Java Projects with Gradle](/guides/gs/gradle/).
 
 ### Create the directory structure
 
