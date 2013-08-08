@@ -126,27 +126,30 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Page {
-	
-	private String name;
-	private String website;
-	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getWebsite() {
-		return website;
-	}
-	public void setWebsite(String website) {
-		this.website = website;
-	}
 
-	@Override
-	public String toString() {
-		return "Page [name=" + name + ", website=" + website + "]";
-	}
+    private String name;
+    private String website;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    @Override
+    public String toString() {
+        return "Page [name=" + name + ", website=" + website + "]";
+    }
 
 }
 ```
@@ -168,13 +171,13 @@ import org.springframework.web.client.RestTemplate;
 
 public class FacebookLookupService {
 
-	RestTemplate restTemplate = new RestTemplate();
+    RestTemplate restTemplate = new RestTemplate();
 
-	@Cacheable("hello")
-	public Page findPage(String page) {
-		return restTemplate.getForObject("http://graph.facebook.com/" + page, Page.class);
-	}
-	
+    @Cacheable("hello")
+    public Page findPage(String page) {
+        return restTemplate.getForObject("http://graph.facebook.com/" + page, Page.class);
+    }
+
 }
 ```
     
@@ -254,52 +257,53 @@ import com.gemstone.gemfire.cache.Cache;
 @EnableCaching
 @EnableGemfireRepositories
 public class Application {
-	
-	@Bean
-	FacebookLookupService facebookLookupService() {
-		return new FacebookLookupService();
-	}
-		
-	@Bean
-	CacheFactoryBean cacheFactoryBean() {
-		return new CacheFactoryBean();
-	}
 
-	@Bean
-	LocalRegionFactoryBean<Integer, Integer> localRegionFactoryBean(final Cache cache) {
-		return new LocalRegionFactoryBean<Integer, Integer>() {{
-			setCache(cache);
-			setName("hello");
-		}};
-	}
+    @Bean
+    FacebookLookupService facebookLookupService() {
+        return new FacebookLookupService();
+    }
 
-	@Bean
-	GemfireCacheManager cacheManager(final Cache gemfireCache) {
-		return new GemfireCacheManager() {{
-			setCache(gemfireCache);
-		}};
-	}
-	
-	public static void main(String[] args) throws IOException, InterruptedException {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-		
-		FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
-		
-		lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-		lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+    @Bean
+    CacheFactoryBean cacheFactoryBean() {
+        return new CacheFactoryBean();
+    }
 
-		lookupPageAndTimeIt(facebookLookupService, "gopivotal");
+    @Bean
+    LocalRegionFactoryBean<Integer, Integer> localRegionFactoryBean(final Cache cache) {
+        return new LocalRegionFactoryBean<Integer, Integer>() {{
+            setCache(cache);
+            setName("hello");
+        }};
+    }
 
-		ctx.close();	
-	}
+    @Bean
+    GemfireCacheManager cacheManager(final Cache gemfireCache) {
+        return new GemfireCacheManager() {{
+            setCache(gemfireCache);
+        }};
+    }
 
-	private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
-		long start = System.currentTimeMillis();
-		Page results = bigCalculator.findPage(page);
-		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("Found " + results + ", and it only took " + 
-				elapsed + " ms to find out!\n");
-	}
+    public static void main(String[] args) throws IOException, InterruptedException {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
+
+        FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
+
+        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+
+        lookupPageAndTimeIt(facebookLookupService, "gopivotal");
+
+        ctx.close();    
+    }
+
+    private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
+        long start = System.currentTimeMillis();
+        Page results = bigCalculator.findPage(page);
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("Found " + results + ", and it only took " + 
+                elapsed + " ms to find out!\n");
+    }
+
 }
 ```
     

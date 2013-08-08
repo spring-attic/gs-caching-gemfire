@@ -17,50 +17,51 @@ import com.gemstone.gemfire.cache.Cache;
 @EnableCaching
 @EnableGemfireRepositories
 public class Application {
-	
-	@Bean
-	FacebookLookupService facebookLookupService() {
-		return new FacebookLookupService();
-	}
-		
-	@Bean
-	CacheFactoryBean cacheFactoryBean() {
-		return new CacheFactoryBean();
-	}
 
-	@Bean
-	LocalRegionFactoryBean<Integer, Integer> localRegionFactoryBean(final Cache cache) {
-		return new LocalRegionFactoryBean<Integer, Integer>() {{
-			setCache(cache);
-			setName("hello");
-		}};
-	}
+    @Bean
+    FacebookLookupService facebookLookupService() {
+        return new FacebookLookupService();
+    }
 
-	@Bean
-	GemfireCacheManager cacheManager(final Cache gemfireCache) {
-		return new GemfireCacheManager() {{
-			setCache(gemfireCache);
-		}};
-	}
-	
-	public static void main(String[] args) throws IOException, InterruptedException {
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-		
-		FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
-		
-		lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-		lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+    @Bean
+    CacheFactoryBean cacheFactoryBean() {
+        return new CacheFactoryBean();
+    }
 
-		lookupPageAndTimeIt(facebookLookupService, "gopivotal");
+    @Bean
+    LocalRegionFactoryBean<Integer, Integer> localRegionFactoryBean(final Cache cache) {
+        return new LocalRegionFactoryBean<Integer, Integer>() {{
+            setCache(cache);
+            setName("hello");
+        }};
+    }
 
-		ctx.close();	
-	}
+    @Bean
+    GemfireCacheManager cacheManager(final Cache gemfireCache) {
+        return new GemfireCacheManager() {{
+            setCache(gemfireCache);
+        }};
+    }
 
-	private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
-		long start = System.currentTimeMillis();
-		Page results = bigCalculator.findPage(page);
-		long elapsed = System.currentTimeMillis() - start;
-		System.out.println("Found " + results + ", and it only took " + 
-				elapsed + " ms to find out!\n");
-	}
+    public static void main(String[] args) throws IOException, InterruptedException {
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
+
+        FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
+
+        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
+
+        lookupPageAndTimeIt(facebookLookupService, "gopivotal");
+
+        ctx.close();    
+    }
+
+    private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
+        long start = System.currentTimeMillis();
+        Page results = bigCalculator.findPage(page);
+        long elapsed = System.currentTimeMillis() - start;
+        System.out.println("Found " + results + ", and it only took " + 
+                elapsed + " ms to find out!\n");
+    }
+
 }
