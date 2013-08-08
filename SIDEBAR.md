@@ -9,10 +9,10 @@ There's more to application development than what is presented here. You may wan
 * [Relational Data Access][gs-relational-data-access]
 * [Managing Transactions][gs-managing-transactions]
 
-[gs-accessing-data-gemfire]: /guides/gs/accessing-data-gemfire/content
-[gs-accessing-data-jpa]: /guides/gs/accessing-data-jpa/content
-[gs-relational-data-access]: /guides/gs/relational-data-access/content
-[gs-managing-transactions]: /guides/gs/managing-transactions/content
+[gs-accessing-data-gemfire]: /guides/gs/accessing-data-gemfire/
+[gs-accessing-data-jpa]: /guides/gs/accessing-data-jpa/
+[gs-relational-data-access]: /guides/gs/relational-data-access/
+[gs-managing-transactions]: /guides/gs/managing-transactions/
 
 ### Tutorials
 
