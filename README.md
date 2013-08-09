@@ -78,6 +78,15 @@ In a project directory of your choosing, create the following subdirectory struc
             <version>7.0.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+            </plugin>
+        </plugins>
+    </build>
     
     <repositories>
         <repository>
