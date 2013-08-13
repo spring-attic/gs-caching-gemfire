@@ -25,5 +25,5 @@ There's more to application development than what is presented here. You may wan
 * [NoSQL][u-nosql]
 * [JSON][u-json]
 
-<@u_nosql/>
-<@u_json/>
+[u-nosql]: /understanding/NoSQL
+[u-json]: /understanding/JSON
