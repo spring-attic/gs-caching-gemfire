@@ -2,7 +2,7 @@
 
 There's more to application development than what is presented here. You may want to continue your exploration of GemFire, data access, and transactions.
 
-### Getting Started Guides
+### Getting Started guides
 
 * [Accessing Data with GemFire][gs-accessing-data-gemfire]
 * [Accessing Data with JPA][gs-accessing-data-jpa]
@@ -20,7 +20,7 @@ There's more to application development than what is presented here. You may wan
 
 [tut-rest]: /guides/tutorials/rest
 
-### Understanding
+### Concepts and technologies
 
 * [NoSQL][u-nosql]
 * [JSON][u-json]
