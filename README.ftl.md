@@ -22,9 +22,9 @@ Set up the project
 
 <@create_directory_structure_hello/>
 
-### Create a Maven POM
+### Create a Gradle build file
 
-    <@snippet path="pom.xml" prefix="initial"/>
+    <@snippet path="build.gradle" prefix="initial"/>
 
 <@bootstrap_starter_pom_disclaimer/>
 
@@ -54,9 +54,12 @@ The key piece of this service is how `findPage` has been annotated with `@Cachea
 
 Later on when you run the code, you will see the time it takes to run each call and be able to discern whether or not the result was cached. This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
 
-<@build_the_application/>
+Make the application executable
+-------------------------------
 
-### Create a main class
+Although GemFire caching can be embedded in web apps and WAR files, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method.
+
+### Create an Application class
 
     <@snippet path="src/main/java/hello/Application.java" prefix="complete"/>
     
@@ -79,7 +82,11 @@ It then looks for the **GoPivotal** page, for the first time. The lookup time wi
 
 For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
 
-<@run_the_application module="service"/>
+<@build_an_executable_jar_subhead/>
+
+<@build_an_executable_jar_with_gradle/>
+
+<@run_the_application_with_gradle/>
 
 Logging output is displayed. The service should be up and running within a few seconds.
 

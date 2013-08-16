@@ -50,73 +50,41 @@ In a project directory of your choosing, create the following subdirectory struc
             └── java
                 └── hello
 
-### Create a Maven POM
+### Create a Gradle build file
 
-`pom.xml`
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+`build.gradle`
+```gradle
+buildscript {
+    repositories {
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+        mavenLocal()
+    }
+}
 
-    <groupId>org.springframework</groupId>
-    <artifactId>gs-caching-gemfire</artifactId>
-    <version>0.1.0</version>
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-gemfire</artifactId>
-            <version>1.3.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>3.2.4.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.gemstone.gemfire</groupId>
-            <artifactId>gemfire</artifactId>
-            <version>7.0.1</version>
-        </dependency>
-    </dependencies>
+jar {
+    baseName = 'gs-caching-gemfire'
+    version =  '0.1.0'
+}
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-            </plugin>
-        </plugins>
-    </build>
-    
-    <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>http://repo.springsource.org/libs-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>gemstone</id>
-            <url>http://dist.gemstone.com.s3.amazonaws.com/maven/release/</url>
-        </repository>
-    </repositories>
+repositories {
+    mavenCentral()
+    maven { url "http://repo.springsource.org/libs-snapshot" }
+}
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>http://repo.springsource.org/libs-snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+dependencies {
+    compile("org.springframework.data:spring-data-gemfire:1.3.0.RELEASE")
+    compile("org.springframework:spring-webmvc:3.2.4.RELEASE")
+    compile("com.gemstone.gemfire:gemfire:7.0.1")
+    testCompile("junit:junit:4.11")
+}
 
-</project>
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.7'
+}
 ```
 
 This guide is using [Spring Boot's starter POMs](/guides/gs/spring-boot/).
@@ -198,52 +166,12 @@ The key piece of this service is how `findPage` has been annotated with `@Cachea
 
 Later on when you run the code, you will see the time it takes to run each call and be able to discern whether or not the result was cached. This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
 
-Build the application
-------------------------
+Make the application executable
+-------------------------------
 
-To build this application, you need to add some extra bits to your pom.xml file.
+Although GemFire caching can be embedded in web apps and WAR files, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method.
 
-```xml
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.1</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>hello.Application</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-```
-
-The [Maven Shade plugin][maven-shade-plugin] extracts classes from all jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
-
-Now run the following to produce a single executable JAR file containing all necessary dependency classes and resources:
-
-```sh
-$ mvn package
-```
-
-[maven-shade-plugin]: https://maven.apache.org/plugins/maven-shade-plugin
-
-> **Note:** The procedure above will create a runnable JAR. You can also opt to [build a classic WAR file](/guides/gs/convert-jar-to-war/) instead.
-
-### Create a main class
+### Create an Application class
 
 `src/main/java/hello/Application.java`
 ```java
@@ -335,12 +263,49 @@ It then looks for the **GoPivotal** page, for the first time. The lookup time wi
 
 For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
 
-Run the service
--------------------
-Run your service with `java -jar` at the command line:
+### Build an executable JAR
+
+Now that your `Application` class is ready, you simply instruct the build system to create a single, executable jar containing everything. This makes it easy to ship, version, and deploy the service as an application throughout the development lifecycle, across different environments, and so forth.
+
+Add the following configuration to your existing Gradle build file:
+
+`build.gradle`
+```groovy
+buildscript {
+    ...
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.BUILD-SNAPSHOT")
+    }
+}
+
+apply plugin: 'spring-boot'
+```
+
+The [Spring Boot gradle plugin][spring-boot-gradle-plugin] collects all the jars on the classpath and builds a single "über-jar", which makes it more convenient to execute and transport your service.
+It also searches for the `public static void main()` method to flag as a runnable class.
+
+Now run the following command to produce a single executable JAR file containing all necessary dependency classes and resources:
 
 ```sh
-$ java -jar target/gs-caching-gemfire-0.1.0.jar
+$ ./gradlew build
+```
+
+Now you can run the JAR by typing:
+
+```sh
+$ java -jar build/libs/gs-caching-gemfire-0.1.0.jar
+```
+
+[spring-boot-gradle-plugin]: https://github.com/SpringSource/spring-boot/tree/master/spring-boot-tools/spring-boot-gradle-plugin
+
+> **Note:** The procedure above will create a runnable JAR. You can also opt to [build a classic WAR file](/guides/gs/convert-jar-to-war/) instead.
+
+Run the service
+-------------------
+Run your service at the command line:
+
+```sh
+$ ./gradlew clean build && java -jar build/libs/gs-caching-gemfire-0.1.0.jar
 ```
 
 
