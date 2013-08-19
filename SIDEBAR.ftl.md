@@ -1,12 +1,12 @@
-### Related Resources
+## Related resources
 
-There's more to application development than what is presented here. You may want to continue your exploration of GemFire, data access, and transactions.
+There's more to application development than what is presented here. You can to explore GemFire, data access, and transactions.
 
 ### Getting Started guides
 
 * [Accessing Data with GemFire][gs-accessing-data-gemfire]
 * [Accessing Data with JPA][gs-accessing-data-jpa]
-* [Relational Data Access][gs-relational-data-access]
+* [Accessing Relational Data with Spring][gs-relational-data-access]
 * [Managing Transactions][gs-managing-transactions]
 
 [gs-accessing-data-gemfire]: /guides/gs/accessing-data-gemfire/

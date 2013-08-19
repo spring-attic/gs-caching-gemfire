@@ -1,9 +1,9 @@
 <#assign project_id="gs-caching-gemfire">
-This guide walks through the process of using the GemFire's data fabric to cache certain calls from your code.
+This guide walks through the process of using GemFire's data fabric to cache certain calls from your code.
 
 What you'll build
 -----------------
-You'll request publicly visible data from Facebook, cache it in GemFire, and then see that fetching the same thing again eliminates the expensive call to Facebook.
+You'll build a service that requests publicly visible data from Facebook and caches it in GemFire. You'll then see that fetching the same thing again eliminates the expensive call to Facebook.
 
 What you'll need
 ----------------
