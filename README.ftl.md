@@ -22,9 +22,8 @@ Set up the project
 
 <@create_directory_structure_hello/>
 
-### Create a Gradle build file
 
-    <@snippet path="build.gradle" prefix="initial"/>
+<@create_both_builds/>
 
 <@bootstrap_starter_pom_disclaimer/>
 
@@ -84,9 +83,9 @@ For demonstration purposes, the call to the `FacebookLookupService` is wrapped i
 
 <@build_an_executable_jar_subhead/>
 
-<@build_an_executable_jar_with_gradle/>
+<@build_an_executable_jar_with_both/>
 
-<@run_the_application_with_gradle/>
+<@run_the_application_with_both/>
 
 Logging output is displayed. The service should be up and running within a few seconds.
 
