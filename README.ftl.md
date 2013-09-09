@@ -47,7 +47,7 @@ Your next step is to create a service that queries Facebook for data about pages
     
 This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but Spring binds the data to produce a `Page` object.
 
-The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://static.springsource.org/spring/docs/3.2.x/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
+The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
 
 > **Note:** You must supply the name of the cache. We named it "hello" for demonstration purposes, but in production, you should probably pick a more descriptive name. This also means different methods can be associated with different caches. This is useful if you have different configuration settings for each cache.
 
