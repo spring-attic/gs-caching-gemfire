@@ -1,9 +1,10 @@
 package hello;
 
-import java.io.IOException;
-
+import com.gemstone.gemfire.cache.Cache;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.gemfire.CacheFactoryBean;
@@ -11,12 +12,11 @@ import org.springframework.data.gemfire.LocalRegionFactoryBean;
 import org.springframework.data.gemfire.repository.config.EnableGemfireRepositories;
 import org.springframework.data.gemfire.support.GemfireCacheManager;
 
-import com.gemstone.gemfire.cache.Cache;
-
 @Configuration
 @EnableCaching
 @EnableGemfireRepositories
-public class Application {
+@EnableAutoConfiguration
+public class Application implements CommandLineRunner {
 
     @Bean
     FacebookLookupService facebookLookupService() {
@@ -43,24 +43,22 @@ public class Application {
         }};
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-
-        FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
-
-        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-
-        lookupPageAndTimeIt(facebookLookupService, "gopivotal");
-
-        ctx.close();    
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
     }
 
-    private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
+    @Override
+    public void run(String... args) throws Exception {
+        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService(), "gopivotal");
+    }
+
+    private void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
         long start = System.currentTimeMillis();
         Page results = bigCalculator.findPage(page);
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Found " + results + ", and it only took " + 
+        System.out.println("Found " + results + ", and it only took " +
                 elapsed + " ms to find out!\n");
     }
 

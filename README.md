@@ -80,9 +80,11 @@ repositories {
 }
 
 dependencies {
+    compile("org.springframework.boot:spring-boot-starter:0.5.0.M4")
+    compile("org.springframework:spring-web:4.0.0.M3")
     compile("org.springframework.data:spring-data-gemfire:1.3.0.RELEASE")
-    compile("org.springframework:spring-webmvc:3.2.4.RELEASE")
     compile("com.gemstone.gemfire:gemfire:7.0.1")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.2.2")
     testCompile("junit:junit:4.11")
 }
 
@@ -105,7 +107,7 @@ Now that you've set up the project and build system, you can focus on defining a
 ```java
 package hello;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Page {
@@ -166,7 +168,7 @@ public class FacebookLookupService {
     
 This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but Spring binds the data to produce a `Page` object.
 
-The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
+The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. [Spring's caching abstraction](http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/cache.html) intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
 
 > **Note:** You must supply the name of the cache. We named it "hello" for demonstration purposes, but in production, you should probably pick a more descriptive name. This also means different methods can be associated with different caches. This is useful if you have different configuration settings for each cache.
 
@@ -183,10 +185,11 @@ Although GemFire caching can be embedded in web apps and WAR files, the simpler 
 ```java
 package hello;
 
-import java.io.IOException;
-
+import com.gemstone.gemfire.cache.Cache;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.gemfire.CacheFactoryBean;
@@ -194,12 +197,11 @@ import org.springframework.data.gemfire.LocalRegionFactoryBean;
 import org.springframework.data.gemfire.repository.config.EnableGemfireRepositories;
 import org.springframework.data.gemfire.support.GemfireCacheManager;
 
-import com.gemstone.gemfire.cache.Cache;
-
 @Configuration
 @EnableCaching
 @EnableGemfireRepositories
-public class Application {
+@EnableAutoConfiguration
+public class Application implements CommandLineRunner {
 
     @Bean
     FacebookLookupService facebookLookupService() {
@@ -226,24 +228,22 @@ public class Application {
         }};
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(Application.class);
-
-        FacebookLookupService facebookLookupService = ctx.getBean(FacebookLookupService.class);
-
-        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-        lookupPageAndTimeIt(facebookLookupService, "SpringSource");
-
-        lookupPageAndTimeIt(facebookLookupService, "gopivotal");
-
-        ctx.close();    
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
     }
 
-    private static void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
+    @Override
+    public void run(String... args) throws Exception {
+        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
+        lookupPageAndTimeIt(facebookLookupService(), "gopivotal");
+    }
+
+    private void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
         long start = System.currentTimeMillis();
         Page results = bigCalculator.findPage(page);
         long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Found " + results + ", and it only took " + 
+        System.out.println("Found " + results + ", and it only took " +
                 elapsed + " ms to find out!\n");
     }
 
@@ -261,9 +261,11 @@ The next three are needed to connect with GemFire and provide caching.
 - `localRegionFactoryBean` defines a GemFire region inside the cache. It is geared to be named "hello", which must match your usage of `@Cacheable("hello")`.
 - `cacheManager` supports Spring's caching abstraction.
 
-> **Note:** Two of these beans are [factory beans](http://blog.springsource.org/2011/08/09/whats-a-factorybean/). This is a common pattern used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
+> **Note:** Two of these beans are [factory beans](http://spring.io/blog/2011/08/09/what-s-a-factorybean). This is a common pattern used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
 
-The `main()` method creates an application context based on the surrounding class. It fetches a `FacebookLookupService`, and proceeds to look up some pages on Facebook. It first looks for the **SpringSource** page twice. As you'll see when you run the application later in this guide, the first time it runs, it will take a certain amount of time to retrieve data about the Facebook page. The second time should take almost no time at all because the first lookup of that page's information was cached. 
+The `main()` method defers to the [`SpringApplication`][] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the [Spring application context][u-application-context]. 
+
+The [`@EnableAutoConfiguration`][] annotation switches on reasonable default behaviors based on the content of your classpath.
 
 It then looks for the **GoPivotal** page, for the first time. The lookup time will also be noticeable, i.e. not close to zero, showing this page isn't cached. That is because the caching is linked to the input parameters of `findPage`.
 
@@ -284,7 +286,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M2")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:0.5.0.M4")
     }
 }
 ```
@@ -348,3 +350,7 @@ Summary
 -------
 
 Congratulations! You've just built a service that performed an expensive operation and tagged it so that it will cache results.
+
+[u-application-context]: /understanding/application-context
+[`SpringApplication`]: http://docs.spring.io/spring-boot/docs/0.5.0.M4/api/org/springframework/boot/SpringApplication.html
+[`@EnableAutoConfiguration`]: http://docs.spring.io/spring-boot/docs/0.5.0.M4/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
