@@ -15,7 +15,6 @@ You'll build a service that requests publicly visible data from Facebook and cac
 include::https://raw.github.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
 
 
-:jump_ahead: Create a bindable object for fetching data
 include::https://raw.github.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
 
 [[scratch]]
