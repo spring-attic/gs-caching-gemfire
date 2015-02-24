@@ -71,7 +71,14 @@ Although GemFire caching can be embedded in web apps and WAR files, the simpler 
 include::complete/src/main/java/hello/Application.java[]
 ----
     
-Your runnable `main` application is combined with all the configuration details in one class.
+`@SpringBootApplication` is a convenience annotation that adds all of the following:
+    
+- `@Configuration` tags the class as a source of bean definitions for the application context.
+- `@EnableAutoConfiguration` tells Spring Boot to start adding beans based on classpath settings, other beans, and various property settings.
+- Normally you would add `@EnableWebMvc` for a Spring MVC app, but Spring Boot adds it automatically when it sees **spring-webmvc** on the classpath. This flags the application as a web application and activates key behaviors such as setting up a `DispatcherServlet`.
+- `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find the `HelloController`.
+
+The `main()` method uses Spring Boot's `SpringApplication.run()` method to launch an application. Did you notice that there wasn't a single line of XML? No **web.xml** file either. This web application is 100% pure Java and you didn't have to deal with configuring any plumbing or infrastructure.
     
 At the top of the configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds important beans in the background to support caching with GemFire.
 
@@ -85,11 +92,7 @@ The next three are needed to connect with GemFire and provide caching.
 
 NOTE: Two of these beans are http://spring.io/blog/2011/08/09/what-s-a-factorybean[factory beans]. This is a common pattern used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
 
-The `main()` method defers to the {SpringApplication}[`SpringApplication`] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the link:/understanding/application-context[Spring application context]. 
-
-The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on reasonable default behaviors based on the content of your classpath.
-
-It then looks for the **GoPivotal** page, for the first time. The lookup time will also be noticeable, i.e. not close to zero, showing this page isn't cached. That is because the caching is linked to the input parameters of `findPage`.
+It then looks for the *PivotalSoftware* page, for the first time. The lookup time will also be noticeable, i.e. not close to zero, showing this page isn't cached. That is because the caching is linked to the input parameters of `findPage`.
 
 For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
 
@@ -101,11 +104,11 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 Logging output is displayed. The service should be up and running within a few seconds.
 
 ....
-Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 620 ms to find out!
+Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 267 ms to find out!
 
-Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 0 ms to find out!
+Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 1 ms to find out!
 
-Found Page [name=Pivotal, website=http://www.gopivotal.com], and it only took 78 ms to find out!
+Found Page [name=Pivotal, website=http://www.pivotal.io], and it only took 102 ms to find out!
 ....
 
 From this you can see that the first call to Facebook for the SpringSource page took 620ms, which the second call took 0ms. That clearly shows that the second call was cached and never actually hit Facebook. But when GoPivotal's page was retrieved, it took 78ms, which while faster than 620ms, was definitely NOT the result of retrieving cached data.

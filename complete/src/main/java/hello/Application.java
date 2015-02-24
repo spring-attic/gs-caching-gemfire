@@ -1,21 +1,20 @@
 package hello;
 
-import com.gemstone.gemfire.cache.Cache;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.gemfire.CacheFactoryBean;
 import org.springframework.data.gemfire.LocalRegionFactoryBean;
 import org.springframework.data.gemfire.repository.config.EnableGemfireRepositories;
 import org.springframework.data.gemfire.support.GemfireCacheManager;
 
-@Configuration
+import com.gemstone.gemfire.cache.Cache;
+
+@SpringBootApplication
 @EnableCaching
 @EnableGemfireRepositories
-@EnableAutoConfiguration
 public class Application implements CommandLineRunner {
 
     @Bean
@@ -51,7 +50,7 @@ public class Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
         lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
         lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
-        lookupPageAndTimeIt(facebookLookupService(), "gopivotal");
+        lookupPageAndTimeIt(facebookLookupService(), "PivotalSoftware");
     }
 
     private void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
