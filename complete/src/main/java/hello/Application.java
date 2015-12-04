@@ -1,5 +1,7 @@
 package hello;
 
+import java.util.Properties;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,10 +13,12 @@ import org.springframework.data.gemfire.repository.config.EnableGemfireRepositor
 import org.springframework.data.gemfire.support.GemfireCacheManager;
 
 import com.gemstone.gemfire.cache.Cache;
+import com.gemstone.gemfire.cache.GemFireCache;
 
 @SpringBootApplication
 @EnableCaching
 @EnableGemfireRepositories
+@SuppressWarnings("unused")
 public class Application implements CommandLineRunner {
 
     @Bean
@@ -23,23 +27,36 @@ public class Application implements CommandLineRunner {
     }
 
     @Bean
-    CacheFactoryBean cacheFactoryBean() {
-        return new CacheFactoryBean();
+    Properties gemfireProperties() {
+        Properties gemfireProperties = new Properties();
+        gemfireProperties.setProperty("name", "DataGemFireCachingApplication");
+        gemfireProperties.setProperty("mcast-port", "0");
+        gemfireProperties.setProperty("log-level", "config");
+        return gemfireProperties;
     }
 
     @Bean
-    LocalRegionFactoryBean<Integer, Integer> localRegionFactoryBean(final Cache cache) {
-        return new LocalRegionFactoryBean<Integer, Integer>() {{
-            setCache(cache);
-            setName("hello");
-        }};
+    CacheFactoryBean gemfireCache() {
+        CacheFactoryBean gemfireCache = new CacheFactoryBean();
+        gemfireCache.setProperties(gemfireProperties());
+        gemfireCache.setUseBeanFactoryLocator(false);
+        return gemfireCache;
+    }
+
+    @Bean
+    LocalRegionFactoryBean<Integer, Integer> localRegionFactory(final GemFireCache cache) {
+        LocalRegionFactoryBean<Integer, Integer> helloRegion = new LocalRegionFactoryBean<>();
+        helloRegion.setCache(cache);
+        helloRegion.setName("hello");
+        helloRegion.setPersistent(false);
+        return helloRegion;
     }
 
     @Bean
     GemfireCacheManager cacheManager(final Cache gemfireCache) {
-        return new GemfireCacheManager() {{
-            setCache(gemfireCache);
-        }};
+        GemfireCacheManager cacheManager = new GemfireCacheManager();
+        cacheManager.setCache(gemfireCache);
+        return cacheManager;
     }
 
     public static void main(String[] args) {
@@ -58,7 +75,7 @@ public class Application implements CommandLineRunner {
         Page results = bigCalculator.findPage(page);
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("Found " + results + ", and it only took " +
-                elapsed + " ms to find out!\n");
+            elapsed + " ms to find out!\n");
     }
 
 }
