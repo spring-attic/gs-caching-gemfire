@@ -22,8 +22,8 @@ import com.gemstone.gemfire.cache.GemFireCache;
 public class Application implements CommandLineRunner {
 
     @Bean
-    FacebookLookupService facebookLookupService() {
-        return new FacebookLookupService();
+    QuoteService quoteService() {
+        return new QuoteService();
     }
 
     @Bean
@@ -44,10 +44,11 @@ public class Application implements CommandLineRunner {
     }
 
     @Bean
-    LocalRegionFactoryBean<Integer, Integer> localRegionFactory(final GemFireCache cache) {
+    LocalRegionFactoryBean<Integer, Integer> quotesRegion(final GemFireCache cache) {
         LocalRegionFactoryBean<Integer, Integer> helloRegion = new LocalRegionFactoryBean<>();
+        helloRegion.setClose(false);
         helloRegion.setCache(cache);
-        helloRegion.setName("hello");
+        helloRegion.setName("Quotes");
         helloRegion.setPersistent(false);
         return helloRegion;
     }
@@ -65,17 +66,16 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
-        lookupPageAndTimeIt(facebookLookupService(), "SpringSource");
-        lookupPageAndTimeIt(facebookLookupService(), "PivotalSoftware");
+        Quote quote = requestQuote(12l);
+        requestQuote(quote.getId());
+        requestQuote(10l);
     }
 
-    private void lookupPageAndTimeIt(FacebookLookupService bigCalculator ,String page) {
-        long start = System.currentTimeMillis();
-        Page results = bigCalculator.findPage(page);
-        long elapsed = System.currentTimeMillis() - start;
-        System.out.println("Found " + results + ", and it only took " +
-            elapsed + " ms to find out!\n");
+    private Quote requestQuote(Long id) {
+        QuoteService quoteService = quoteService();
+        Quote quote = (id != null ? quoteService.requestQuote(id) : quoteService.requestRandomQuote());
+        System.out.printf("Quote is \"%1$s\"; Cache Miss is %2$s%n", quote, quoteService.isCacheMiss());
+        return quote;
     }
 
 }
