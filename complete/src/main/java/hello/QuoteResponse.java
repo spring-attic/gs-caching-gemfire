@@ -3,13 +3,6 @@ package hello;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * The QuoteResponse class models the response from the QuoteService when a quote is requested by an application.
- *
- * @author John Blum
- * @see hello.Quote
- * @since 1.0.0
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unused")
 public class QuoteResponse {

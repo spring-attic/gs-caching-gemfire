@@ -4,12 +4,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * The Quote class models a quote.
- *
- * @author John Blum
- * @since 1.0.0
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unused")
 public class Quote {

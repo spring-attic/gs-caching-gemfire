@@ -7,25 +7,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * The QuoteService class chooses a randomly selected quote from Greg Turnquist's Quote Service
- * running in Pivotal CloudFoundry @ http://gturnquist-quoters.cfapps.io/api.
- *
- * Quote API web service endpoints include:
- *
- * /api to get all quotes
- * /api/random for a random quote
- * /api/{id} for specific quote
- *
- * @author John Blum
- * @see hello.Quote
- * @see hello.QuoteResponse
- * @see org.springframework.cache.annotation.Cacheable
- * @see org.springframework.cache.annotation.CachePut
- * @see org.springframework.web.client.RestTemplate
- * @see <a href="http://gturnquist-quoters.cfapps.io/api">Quote Service</a>
- * @since 1.0.0
- */
 @SuppressWarnings("unused")
 public class QuoteService {
 
@@ -67,7 +48,7 @@ public class QuoteService {
 	}
 
 	/**
-	 * Requests a completely random quote.
+	 * Requests a random quote.
 	 *
 	 * @return a random {@link Quote}.
 	 */
@@ -77,12 +58,10 @@ public class QuoteService {
 		return requestQuote(RANDOM_QUOTE_SERVICE_URL);
 	}
 
-	/* (non-Javadoc) */
 	protected Quote requestQuote(String URL) {
 		return requestQuote(URL, Collections.emptyMap());
 	}
 
-	/* (non-Javadoc) */
 	protected Quote requestQuote(String URL, Map<String, Object> urlVariables) {
 		QuoteResponse quoteResponse = quoteServiceTemplate.getForObject(URL, QuoteResponse.class, urlVariables);
 		return quoteResponse.getQuote();
