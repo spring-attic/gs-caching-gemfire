@@ -184,10 +184,10 @@ Cache Miss [true] - Elapsed Time [96 ms]
 ....
 
 From this you can see that the first call to the Quote service for a quote took 776 ms and resulted in a cache miss.
-However, the second call requesting the same quote took 0ms and resulted in a cache hit. This clearly shows that
-the second call was cached and never actually hit the Quote service. But, when a final service call and specific,
-non-cached quote request was made, it took 96 ms and result in a cache miss since this quote was not previously
-in the cache.
+However, the second call requesting the same quote took 0 ms and resulted in a cache hit. This clearly shows that
+the second call was cached and never actually hit the Quote service. However, when a final service call for a specific,
+non-cached quote request is made, it took 96 ms and resulted in a cache miss since this new quote was not previously
+in the cache before the call.
 
 == Summary
 

@@ -28,9 +28,6 @@ public class QuoteService {
 		return cacheMiss;
 	}
 
-	/**
-	 * Triggers a cache miss.
-	 */
 	protected void setCacheMiss() {
 		this.cacheMiss = true;
 	}
