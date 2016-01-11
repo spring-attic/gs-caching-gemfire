@@ -12,13 +12,27 @@ projects: [spring-framework]
 This guide walks through the process of using GemFire's data fabric to cache certain calls from your code.
 
 == What you'll build
-You'll build a service that requests publicly visible data from Facebook and caches it in GemFire. You'll then see that fetching the same thing again eliminates the expensive call to Facebook.
+You'll build a service that requests quotes from a CloudFoundry hosted Quote service and caches them in GemFire.
+You'll then see that fetching the same quote again eliminates the expensive call to the Quote service.
+
+The Quote service is located at...
+
+....
+http://gturnquist-quoters.cfapps.io
+....
+
+The Quote service has the following API...
+
+....
+GET /api         - get all quotes
+GET /api/random  - get random quote
+GET /api/{id}    - get specific quote
+....
 
 == What you'll need
 
 :java_version: 1.8
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
-
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
 
@@ -32,38 +46,84 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 
 [[initial]]
 == Create a bindable object for fetching data
-Now that you've set up the project and build system, you can focus on defining an object to capture the bits you need to pull data from Facebook.
+Now that you've set up the project and build system, you can focus on defining the domain objects necessary to capture
+the bits you need to pull quotes (the data) from the Quote service.
 
-`src/main/java/hello/Page.java`
+`src/main/java/hello/Quote.java`
 [source,java]
 ----
-include::complete/src/main/java/hello/Page.java[]
+include::complete/src/main/java/hello/Quote.java[]
 ----
     
-The `Page` class has `name` and `website` properties along with standard getters and setters. These are the two attributes you will gather further along in this guide.
+The `Quote` domain class has `id` and `quote` properties along with standard getters and setters. These are the two
+primary attributes you will gather further along in this guide.
 
-Note that the class is marked as `@JsonIgnoreProperties(ignoreUnknown=true)`. That means that even though other attributes will be retrieved, they'll be ignored.
+In addition to `Quote`, the `QuoteResponse` captures the entire payload of the Quote service sent in response to
+a quote request. It includes the `status` (a.k.a. `type`) of the request along with the `quote`.
 
-== Query Facebook for data
-Your next step is to create a service that queries Facebook for data about pages. 
-
-`src/main/java/hello/FacebookLookupService.java`
+`src/main/java/hello/QuoteResponse.java`
 [source,java]
 ----
-include::complete/src/main/java/hello/FacebookLookupService.java[]
+include::complete/src/main/java/hello/QuoteResponse.java[]
 ----
-    
-This service uses Spring's `RestTemplate` to query Facebook's http://graph.facebook.com API. Facebook returns a JSON object, but Spring binds the data to produce a `Page` object.
 
-The key piece of this service is how `findPage` has been annotated with `@Cacheable("hello")`. http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/cache.html[Spring's caching abstraction] intercepts the call to `findPage`to check whether it's already been called. If so, Spring's caching abstraction returns the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return the results to the caller.
+A typical response from the Quote service appears as follows:
 
-NOTE: You must supply the name of the cache. We named it "hello" for demonstration purposes, but in production, you should probably pick a more descriptive name. This also means different methods can be associated with different caches. This is useful if you have different configuration settings for each cache.
+[source,javascript]
+----
+{
+  "type":"success",
+  "value": {
+    "id":1,
+    "quote":"Working with Spring Boot is like pair-programming with the Spring developers."
+  }
+}
+----
 
-Later on when you run the code, you will see the time it takes to run each call and be able to discern whether or not the result was cached. This demonstrates the value of caching certain calls. If your application is constantly looking up the same data, caching the results can improve your performance dramatically.
+Both classes are marked with `@JsonIgnoreProperties(ignoreUnknown=true)`. This means even though other JSON attributes
+may be retrieved, they'll be ignored.
+
+== Query Quote service for data
+Your next step is to create a service that queries the Quote service for quotes.
+
+`src/main/java/hello/QuoteService.java`
+[source,java]
+----
+include::complete/src/main/java/hello/QuoteService.java[]
+----
+
+This service uses Spring's `RestTemplate` to query the Quote service's http://gturnquist-quoters.cfapps.io/api API.
+The Quote service returns a JSON object, but Spring binds the data to produce a `QuoteResponse` and ultimately,
+a `Quote` object.
+
+The key piece of this service is how `requestQuote` has been annotated with `@Cacheable("Quotes")`.
+http://docs.spring.io/spring/docs/4.0.x/spring-framework-reference/html/cache.html[Spring's caching abstraction] intercepts
+the call to `requestQuote`to check whether it's already been called. If so, Spring's caching abstraction returns
+the cached copy. Otherwise, it proceeds to invoke the method, store the response in the cache, and then return
+the results to the caller.
+
+We also used the `@CachePut` annotation on the `requestRandomQuote` service method.  Since the quote returned from
+this service invocation will be random, we don't know which quote we will receive.  Therefore, we cannot consult
+the cache (i.e. `Quotes`) prior to the call, but we can cache the result of the call, which will have a positive
+affect on subsequent `requestQuote(id)` calls, assuming the quote of interest was randomly selected and cache previously.
+
+The `@CachePut` includes a SpEL expression (`#result.id`) to access the result of the service method invocation
+and retrieve the ID of the quote to use as the cache key. You can learn more about Spring's cache abstraction
+SpEL context http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#cache-spel-context[here].
+
+NOTE: You must supply the name of the cache. We named it "Quotes" for demonstration purposes, but in production,
+it is recommended to pick an appropriately descriptive name. This also means different methods can be associated
+with different caches. This is useful if you have different configuration settings for each cache, such as expiration
+or eviction policies, and so on.
+
+Later on when you run the code, you will see the time it takes to run each call and be able to discern the impact that
+caching has on service response times. This demonstrates the value of caching certain calls. If your application is
+constantly looking up the same data, caching the results can improve your performance dramatically.
 
 == Make the application executable
 
-Although GemFire caching can be embedded in web apps and WAR files, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method.
+Although GemFire caching can be embedded in web apps and WAR files, the simpler approach demonstrated below creates a
+standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method.
 
 
 `src/main/java/hello/Application.java`
@@ -71,31 +131,41 @@ Although GemFire caching can be embedded in web apps and WAR files, the simpler 
 ----
 include::complete/src/main/java/hello/Application.java[]
 ----
-    
+
 `@SpringBootApplication` is a convenience annotation that adds all of the following:
     
 - `@Configuration` tags the class as a source of bean definitions for the application context.
 - `@EnableAutoConfiguration` tells Spring Boot to start adding beans based on classpath settings, other beans, and various property settings.
 - Normally you would add `@EnableWebMvc` for a Spring MVC app, but Spring Boot adds it automatically when it sees **spring-webmvc** on the classpath. This flags the application as a web application and activates key behaviors such as setting up a `DispatcherServlet`.
-- `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find the `HelloController`.
+- `@ComponentScan` tells Spring to look for other components, configurations, and services in the the `hello` package, allowing it to find, for example, a `HelloController` in a web application.
 
-The `main()` method uses Spring Boot's `SpringApplication.run()` method to launch an application. Did you notice that there wasn't a single line of XML? No **web.xml** file either. This web application is 100% pure Java and you didn't have to deal with configuring any plumbing or infrastructure.
+The `main()` method uses Spring Boot's `SpringApplication.run()` method to launch the application. Did you notice there
+wasn't a single line of XML? No **web.xml** file either. This application is 100% pure Java and you didn't have to deal
+with configuring any plumbing or infrastructure.
     
-At the top of the configuration are two vital annotations: `@EnableCaching` and `@EnableGemfireRepositories`. This turns on caching and adds important beans in the background to support caching with GemFire.
+At the top of the configuration is a single vital annotation: `@EnableCaching` This turns on caching and adds
+important beans in the background to support caching with GemFire.
 
-The first bean is an instance of `FacebookLookupService`.
+The first bean is an instance of `QuoteService`.
 
-The next three are needed to connect with GemFire and provide caching.
+The next four are needed to connect with GemFire and provide caching.
 
-- `cacheFactoryBean` creates a GemFire cache.
-- `localRegionFactoryBean` defines a GemFire region inside the cache. It is geared to be named "hello", which must match your usage of `@Cacheable("hello")`.
-- `cacheManager` supports Spring's caching abstraction.
+- `gemfireProperties` GemFire System properties used to configure a standalone GemFire data node.
+- `gemfireCache` creates a GemFire cache bean in the Spring application context.
+- `quotesRegion` defines a GemFire Region inside the cache to store quotes. It is named "Quotes and must match your usage of `@Cacheable("Quotes")`.
+- `cacheManager` supports Spring's caching abstraction using GemFire as the provider.
 
-NOTE: Two of these beans are http://spring.io/blog/2011/08/09/what-s-a-factorybean[factory beans]. This is a common pattern used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
+NOTE: Two of these beans are http://spring.io/blog/2011/08/09/what-s-a-factorybean[factory beans]. This is a common pattern
+used for objects that need special creation logic. Basically, `CacheFactoryBean` results in a `Cache` bean
+and `LocalRegionFactoryBean` results in a `LocalRegion` bean being registered with the context.
 
-It then looks for the *PivotalSoftware* page, for the first time. The lookup time will also be noticeable, i.e. not close to zero, showing this page isn't cached. That is because the caching is linked to the input parameters of `findPage`.
+The first time a quote is requested (using `requestQuote(id)`), a cache miss occurs and the service method will be invoked,
+incurring a noticeable delay, i.e. not close to zero ms.  In this case, caching is linked by the input parameters (i.e. `id`)
+of the service method, `requestQuote`. In other words, the `id` method parameter is the cache key. Subsequent requests
+for the same quote identified by ID, will result in a cache hit, thereby avoiding the expensive service call.
 
-For demonstration purposes, the call to the `FacebookLookupService` is wrapped in a separate method to capture the time to make the call. This lets you see exactly how long any one lookup is taking.
+For demonstration purposes, the call to the `QuoteService` is wrapped in a separate method (`requestQuote` inside the
+`Application` class) to capture the time to make the service call. This lets you see exactly how long any one request is taking.
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 
@@ -105,14 +175,19 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 Logging output is displayed. The service should be up and running within a few seconds.
 
 ....
-Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 267 ms to find out!
-
-Found Page [name=SpringSource, website=http://www.springsource.com], and it only took 1 ms to find out!
-
-Found Page [name=Pivotal, website=http://www.pivotal.io], and it only took 102 ms to find out!
+"@springboot with @springframework is pure productivity! Who said in #java one has to write double the code than in other langs? #newFavLib"
+Cache Miss [true] - Elapsed Time [776 ms]
+"@springboot with @springframework is pure productivity! Who said in #java one has to write double the code than in other langs? #newFavLib"
+Cache Miss [false] - Elapsed Time [0 ms]
+"Really loving Spring Boot, makes stand alone Spring apps easy."
+Cache Miss [true] - Elapsed Time [96 ms]
 ....
 
-From this you can see that the first call to Facebook for the SpringSource page took 620ms, which the second call took 0ms. That clearly shows that the second call was cached and never actually hit Facebook. But when GoPivotal's page was retrieved, it took 78ms, which while faster than 620ms, was definitely NOT the result of retrieving cached data.
+From this you can see that the first call to the Quote service for a quote took 776 ms and resulted in a cache miss.
+However, the second call requesting the same quote took 0ms and resulted in a cache hit. This clearly shows that
+the second call was cached and never actually hit the Quote service. But, when a final service call and specific,
+non-cached quote request was made, it took 96 ms and result in a cache miss since this quote was not previously
+in the cache.
 
 == Summary
 
@@ -120,4 +195,3 @@ Congratulations! You've just built a service that performed an expensive operati
 
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
-
