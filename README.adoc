@@ -152,7 +152,7 @@ The next four are needed to connect with GemFire and provide caching.
 
 - `gemfireProperties` GemFire System properties used to configure a standalone GemFire data node.
 - `gemfireCache` creates a GemFire cache bean in the Spring application context.
-- `quotesRegion` defines a GemFire Region inside the cache to store quotes. It is named "Quotes and must match your usage of `@Cacheable("Quotes")`.
+- `quotesRegion` defines a GemFire Region inside the cache to store quotes. It is named "Quotes" and must match your usage of `@Cacheable("Quotes")`.
 - `cacheManager` supports Spring's caching abstraction using GemFire as the provider.
 
 NOTE: Two of these beans are http://spring.io/blog/2011/08/09/what-s-a-factorybean[factory beans]. This is a common pattern
