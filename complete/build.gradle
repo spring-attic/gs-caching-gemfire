@@ -31,7 +31,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-gemfire")
     compile("com.fasterxml.jackson.core:jackson-databind")
     runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
-    testCompile("junit:junit")
 }
 
 task wrapper(type: Wrapper) {
