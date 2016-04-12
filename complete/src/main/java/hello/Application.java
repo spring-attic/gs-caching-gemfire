@@ -36,23 +36,23 @@ public class Application implements CommandLineRunner {
     @Bean
     CacheFactoryBean gemfireCache() {
         CacheFactoryBean gemfireCache = new CacheFactoryBean();
+        gemfireCache.setClose(true);
         gemfireCache.setProperties(gemfireProperties());
-        gemfireCache.setUseBeanFactoryLocator(false);
         return gemfireCache;
     }
 
     @Bean
-    LocalRegionFactoryBean<Integer, Integer> quotesRegion(final GemFireCache cache) {
-        LocalRegionFactoryBean<Integer, Integer> helloRegion = new LocalRegionFactoryBean<>();
-        helloRegion.setClose(false);
-        helloRegion.setCache(cache);
-        helloRegion.setName("Quotes");
-        helloRegion.setPersistent(false);
-        return helloRegion;
+    LocalRegionFactoryBean<Integer, Integer> quotesRegion(GemFireCache cache) {
+        LocalRegionFactoryBean<Integer, Integer> quotesRegion = new LocalRegionFactoryBean<>();
+        quotesRegion.setCache(cache);
+        quotesRegion.setClose(false);
+        quotesRegion.setName("Quotes");
+        quotesRegion.setPersistent(false);
+        return quotesRegion;
     }
 
     @Bean
-    GemfireCacheManager cacheManager(final Cache gemfireCache) {
+    GemfireCacheManager cacheManager(Cache gemfireCache) {
         GemfireCacheManager cacheManager = new GemfireCacheManager();
         cacheManager.setCache(gemfireCache);
         return cacheManager;
