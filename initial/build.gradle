@@ -33,6 +33,3 @@ dependencies {
     runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.3'
-}
