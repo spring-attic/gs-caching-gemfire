@@ -54,7 +54,7 @@ the bits you need to pull quotes (the data) from the Quote service.
 ----
 include::complete/src/main/java/hello/Quote.java[]
 ----
-    
+
 The `Quote` domain class has `id` and `quote` properties along with standard getters and setters. These are the two
 primary attributes you will gather further along in this guide.
 
@@ -133,7 +133,7 @@ include::complete/src/main/java/hello/Application.java[]
 ----
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
-    
+
 At the top of the configuration is a single vital annotation: `@EnableCaching` This turns on caching and adds
 important beans in the background to support caching with GemFire.
 
@@ -184,5 +184,12 @@ in the cache before the call.
 
 Congratulations! You've just built a service that performed an expensive operation and tagged it so that it will cache results.
 
+== See Also
+
+The following guides may also be helpful:
+
+* https://spring.io/guides/gs/caching/[Caching Data with Spring]
+* https://spring.io/guides/gs/serving-web-content/[Serving Web Content with Spring MVC]
+* https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot]
 
 include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
