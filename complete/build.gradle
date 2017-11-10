@@ -42,6 +42,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter")
     compile("org.springframework.data:spring-data-gemfire")
     compile("com.fasterxml.jackson.core:jackson-databind:2.9.2")
+    compile("org.projectlombok:lombok:1.16.18")
     runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
 }
 
