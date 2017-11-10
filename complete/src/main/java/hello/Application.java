@@ -1,23 +1,36 @@
 package hello;
 
-import java.util.Properties;
+import java.util.Optional;
 
-import org.springframework.boot.CommandLineRunner;
+import org.apache.geode.cache.GemFireCache;
+import org.apache.geode.cache.client.ClientRegionShortcut;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.gemfire.CacheFactoryBean;
-import org.springframework.data.gemfire.LocalRegionFactoryBean;
-import org.springframework.data.gemfire.support.GemfireCacheManager;
+import org.springframework.data.gemfire.cache.config.EnableGemfireCaching;
+import org.springframework.data.gemfire.client.ClientRegionFactoryBean;
+import org.springframework.data.gemfire.config.annotation.ClientCacheApplication;
 
-import com.gemstone.gemfire.cache.Cache;
-import com.gemstone.gemfire.cache.GemFireCache;
-
-@SpringBootApplication
-@EnableCaching
+@ClientCacheApplication(name = "CachingGemFireApplication", logLevel = "error")
+@EnableGemfireCaching
 @SuppressWarnings("unused")
-public class Application implements CommandLineRunner {
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+    @Bean("Quotes")
+    public ClientRegionFactoryBean<Integer, Integer> quotesRegion(GemFireCache gemfireCache) {
+
+        ClientRegionFactoryBean<Integer, Integer> quotesRegion = new ClientRegionFactoryBean<>();
+
+        quotesRegion.setCache(gemfireCache);
+        quotesRegion.setClose(false);
+        quotesRegion.setShortcut(ClientRegionShortcut.LOCAL);
+
+        return quotesRegion;
+    }
 
     @Bean
     QuoteService quoteService() {
@@ -25,58 +38,30 @@ public class Application implements CommandLineRunner {
     }
 
     @Bean
-    Properties gemfireProperties() {
-        Properties gemfireProperties = new Properties();
-        gemfireProperties.setProperty("name", "DataGemFireCachingApplication");
-        gemfireProperties.setProperty("mcast-port", "0");
-        gemfireProperties.setProperty("log-level", "config");
-        return gemfireProperties;
-    }
+    ApplicationRunner run() {
 
-    @Bean
-    CacheFactoryBean gemfireCache() {
-        CacheFactoryBean gemfireCache = new CacheFactoryBean();
-        gemfireCache.setClose(true);
-        gemfireCache.setProperties(gemfireProperties());
-        return gemfireCache;
-    }
-
-    @Bean
-    LocalRegionFactoryBean<Integer, Integer> quotesRegion(GemFireCache cache) {
-        LocalRegionFactoryBean<Integer, Integer> quotesRegion = new LocalRegionFactoryBean<>();
-        quotesRegion.setCache(cache);
-        quotesRegion.setClose(false);
-        quotesRegion.setName("Quotes");
-        quotesRegion.setPersistent(false);
-        return quotesRegion;
-    }
-
-    @Bean
-    GemfireCacheManager cacheManager(Cache gemfireCache) {
-        GemfireCacheManager cacheManager = new GemfireCacheManager();
-        cacheManager.setCache(gemfireCache);
-        return cacheManager;
-    }
-
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        Quote quote = requestQuote(12l);
-        requestQuote(quote.getId());
-        requestQuote(10l);
+        return args -> {
+            Quote quote = requestQuote(12L);
+            requestQuote(quote.getId());
+            requestQuote(10L);
+        };
     }
 
     private Quote requestQuote(Long id) {
+
         QuoteService quoteService = quoteService();
+
         long startTime = System.currentTimeMillis();
-        Quote quote = (id != null ? quoteService.requestQuote(id) : quoteService.requestRandomQuote());
+
+        Quote quote = Optional.ofNullable(id)
+            .map(quoteService::requestQuote)
+            .orElseGet(quoteService::requestRandomQuote);
+
         long elapsedTime = System.currentTimeMillis();
+
         System.out.printf("\"%1$s\"%nCache Miss [%2$s] - Elapsed Time [%3$s ms]%n", quote,
             quoteService.isCacheMiss(), (elapsedTime - startTime));
+
         return quote;
     }
-
 }
