@@ -8,14 +8,14 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.spring.dependency-management" version "1.0.3.RELEASE"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
-
-plugins {
-    id "io.spring.dependency-management" version "1.0.3.RELEASE"
-}
 
 jar {
     baseName = 'gs-caching-gemfire'
@@ -40,9 +40,13 @@ dependencyManagement {
 dependencies {
     compile("org.springframework:spring-web")
     compile("org.springframework.boot:spring-boot-starter")
-    compile("org.springframework.data:spring-data-gemfire")
+    compile("org.springframework.data:spring-data-gemfire") {
+        exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+        exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
+    }
+    compile("com.fasterxml.jackson.core:jackson-annotations:2.9.2")
     compile("com.fasterxml.jackson.core:jackson-databind:2.9.2")
+    compile("com.fasterxml.jackson.core:jackson-core:2.9.2")
     compile("org.projectlombok:lombok:1.16.18")
     runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
 }
-
