@@ -1,9 +1,12 @@
 package hello;
 
-import org.springframework.util.ObjectUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import org.springframework.util.ObjectUtils;
+
+import lombok.Data;
+
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressWarnings("unused")
 public class Quote {
@@ -12,25 +15,10 @@ public class Quote {
 
 	private String quote;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(final Long id) {
-		this.id = id;
-	}
-
-	public String getQuote() {
-		return quote;
-	}
-
-	public void setQuote(final String quote) {
-		this.quote = quote;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+
+		if (this == obj) {
 			return true;
 		}
 
@@ -54,5 +42,4 @@ public class Quote {
 	public String toString() {
 		return getQuote();
 	}
-
 }

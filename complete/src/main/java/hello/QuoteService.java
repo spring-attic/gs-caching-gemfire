@@ -2,6 +2,7 @@ package hello;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,7 +16,7 @@ public class QuoteService {
 
 	private volatile boolean cacheMiss = false;
 
-	private RestTemplate quoteServiceTemplate = new RestTemplate();
+	private final RestTemplate quoteServiceTemplate = new RestTemplate();
 
 	/**
 	 * Determines whether the previous service method invocation resulted in a cache miss.
@@ -60,8 +61,9 @@ public class QuoteService {
 	}
 
 	protected Quote requestQuote(String URL, Map<String, Object> urlVariables) {
-		QuoteResponse quoteResponse = quoteServiceTemplate.getForObject(URL, QuoteResponse.class, urlVariables);
-		return quoteResponse.getQuote();
-	}
 
+		return Optional.ofNullable(this.quoteServiceTemplate.getForObject(URL, QuoteResponse.class, urlVariables))
+			.map(QuoteResponse::getQuote)
+			.orElse(null);
+	}
 }
