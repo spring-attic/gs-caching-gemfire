@@ -38,7 +38,7 @@ public class Application {
     }
 
     @Bean
-    ApplicationRunner run() {
+    ApplicationRunner runner() {
 
         return args -> {
             Quote quote = requestQuote(12L);
