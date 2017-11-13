@@ -8,10 +8,17 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.spring.dependency-management" version "1.0.3.RELEASE"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 jar {
     baseName = 'gs-caching-gemfire'
@@ -23,13 +30,23 @@ repositories {
     maven { url "https://repo.spring.io/libs-release" }
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework:spring-framework-bom:5.0.1.RELEASE'
+        mavenBom 'org.springframework.data:spring-data-releasetrain:Kay-SR1'
+    }
+}
 
 dependencies {
     compile("org.springframework:spring-web")
-    compile("org.springframework.boot:spring-boot-starter-data-gemfire")
-    compile("com.fasterxml.jackson.core:jackson-databind")
-    runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.data:spring-data-gemfire") {
+        exclude group: "com.fasterxml.jackson.core", module: "jackson-annotations"
+        exclude group: "com.fasterxml.jackson.core", module: "jackson-databind"
+    }
+    compile("com.fasterxml.jackson.core:jackson-annotations:2.9.2")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.9.2")
+    compile("com.fasterxml.jackson.core:jackson-core:2.9.2")
+    compile("org.projectlombok:lombok:1.16.18")
+    runtime("org.springframework.shell:spring-shell:1.2.0.RELEASE")
 }
-
