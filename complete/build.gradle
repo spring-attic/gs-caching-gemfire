@@ -17,6 +17,9 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 jar {
     baseName = 'gs-caching-gemfire'
     version =  '0.1.0'
@@ -26,9 +29,6 @@ repositories {
     mavenCentral()
     maven { url "https://repo.spring.io/libs-release" }
 }
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 dependencyManagement {
     imports {
@@ -48,5 +48,5 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-databind:2.9.2")
     compile("com.fasterxml.jackson.core:jackson-core:2.9.2")
     compile("org.projectlombok:lombok:1.16.18")
-    runtime("org.springframework.shell:spring-shell:1.0.0.RELEASE")
+    runtime("org.springframework.shell:spring-shell:1.2.0.RELEASE")
 }
