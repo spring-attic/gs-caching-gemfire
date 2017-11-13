@@ -9,7 +9,11 @@ projects: [spring-framework]
 :icons: font
 :source-highlighter: prettify
 :project_id: gs-caching-gemfire
-This guide walks through the process of using GemFire's data fabric to cache certain calls from your code.
+
+This guide walks through the process of using Pivotal GemFire's data fabric to cache certain calls from your code.
+
+TIP: For more general knowledge of Pivotal GemFire concepts and accessing data from GemFire, read through the guide,
+https://spring.io/guides/gs/accessing-data-gemfire/[Accessing Data with GemFire].
 
 == What you'll build
 
