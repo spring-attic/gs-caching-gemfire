@@ -33,8 +33,11 @@ public class Quote {
 
 	@Override
 	public int hashCode() {
+
 		int hashValue = 17;
+
 		hashValue = 37 * hashValue + ObjectUtils.nullSafeHashCode(getId());
+
 		return hashValue;
 	}
 

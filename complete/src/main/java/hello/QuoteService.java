@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("unused")
+@Service
 public class QuoteService {
 
 	protected static final String ID_BASED_QUOTE_SERVICE_URL = "http://gturnquist-quoters.cfapps.io/api/{id}";
