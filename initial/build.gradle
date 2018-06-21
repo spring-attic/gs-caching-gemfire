@@ -20,7 +20,7 @@ apply plugin: 'org.springframework.boot'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-jar {
+bootJar {
     baseName = 'gs-caching-gemfire'
     version =  '0.1.0'
 }
