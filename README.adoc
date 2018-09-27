@@ -151,7 +151,7 @@ The first bean is an instance of `QuoteService` used to access the Quotes REST-f
 
 The other two are needed to cache Quotes and perform the actions of the application.
 
-- `quotesRegion` defines a Pivotal GemFire `LOCAL` lcient Region inside the cache to store quotes.
+- `quotesRegion` defines a Pivotal GemFire `LOCAL` client Region inside the cache to store quotes.
 It is specifically named "Quotes" to match the usage of `@Cacheable("Quotes")` on our `QuoteService` method.
 - `runner` is an instance of the _Spring Boot_ `ApplicationRunner` interface used to run our application.
 
