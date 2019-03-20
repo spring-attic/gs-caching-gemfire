@@ -13,8 +13,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class QuoteService {
 
-	protected static final String ID_BASED_QUOTE_SERVICE_URL = "http://gturnquist-quoters.cfapps.io/api/{id}";
-	protected static final String RANDOM_QUOTE_SERVICE_URL = "http://gturnquist-quoters.cfapps.io/api/random";
+	protected static final String ID_BASED_QUOTE_SERVICE_URL = "https://gturnquist-quoters.cfapps.io/api/{id}";
+	protected static final String RANDOM_QUOTE_SERVICE_URL = "https://gturnquist-quoters.cfapps.io/api/random";
 
 	private volatile boolean cacheMiss = false;
 

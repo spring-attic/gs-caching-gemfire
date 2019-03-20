@@ -1,6 +1,6 @@
 :spring_boot_version: 1.5.10.RELEASE
-:EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
-:SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
+:EnableAutoConfiguration: https://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
+:SpringApplication: https://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
 :toc:
 :icons: font
 :source-highlighter: prettify
@@ -21,7 +21,7 @@ Spring's Cache Abstraction, backed by Pivotal GemFire, will be used to cache the
 The Quote service is located at...
 
 ....
-http://gturnquist-quoters.cfapps.io
+https://gturnquist-quoters.cfapps.io
 ....
 
 The Quote service has the following API...
@@ -99,7 +99,7 @@ Your next step is to create a service class that queries for quotes.
 include::complete/src/main/java/hello/QuoteService.java[]
 ----
 
-The `QuoteService` uses _Spring's_ `RestTemplate` to query the Quote service's http://gturnquist-quoters.cfapps.io/api[API].
+The `QuoteService` uses _Spring's_ `RestTemplate` to query the Quote service's https://gturnquist-quoters.cfapps.io/api[API].
 The Quote service returns a JSON object, but _Spring_ uses Jackson to bind the data to a `QuoteResponse` and ultimately,
 a `Quote` object.
 
@@ -117,7 +117,7 @@ and cached previously.
 
 The `@CachePut` uses a SpEL expression ("`#result.id`") to access the result of the service method invocation
 and retrieve the ID of the `Quote` to use as the cache key. You can learn more about _Spring's Cache Abstraction_
-SpEL context http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#cache-spel-context[here].
+SpEL context https://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#cache-spel-context[here].
 
 NOTE: You must supply the name of the cache. We named it "Quotes" for demonstration purposes, but in production,
 it is recommended to pick an appropriately descriptive name. This also means different methods can be associated
