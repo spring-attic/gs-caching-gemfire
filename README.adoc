@@ -53,7 +53,7 @@ Now that you've set up the project and build system, you can focus on defining t
 the bits you need to pull quotes (the data) from the Quote service.
 
 `src/main/java/hello/Quote.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/Quote.java[]
 ----
@@ -67,14 +67,14 @@ sent in the quote request. It includes the `status` (a.k.a. `type`) of the reque
 also uses https://projectlombok.org/[Project Lombok] to simplify the implementation.
 
 `src/main/java/hello/QuoteResponse.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/QuoteResponse.java[]
 ----
 
 A typical response from the Quote service appears as follows:
 
-[source,javascript]
+[source,java,tabsize=2script]
 ----
 {
   "type":"success",
@@ -94,7 +94,7 @@ may be retrieved, they'll be ignored.
 Your next step is to create a service class that queries for quotes.
 
 `src/main/java/hello/QuoteService.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/QuoteService.java[]
 ----
@@ -136,7 +136,7 @@ creates a standalone application. You package everything in a single, executable
 `main()` method.
 
 `src/main/java/hello/Application.java`
-[source,java]
+[source,java,tabsize=2]
 ----
 include::complete/src/main/java/hello/Application.java[]
 ----
