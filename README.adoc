@@ -1,22 +1,25 @@
-:spring_boot_version: 1.5.10.RELEASE
-:EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
-:SpringApplication: http://docs.spring.io/spring-boot/docs/{spring_boot_version}/api/org/springframework/boot/SpringApplication.html
+:apache-geode-name: Apache Geode
+:spring-boot-version: 2.4.1
+:EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
+:SpringApplication: http://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/org/springframework/boot/SpringApplication.html
 :toc:
 :icons: font
 :source-highlighter: prettify
 :project_id: gs-caching-gemfire
 
-This guide walks through the process of using Pivotal GemFire's data fabric to cache certain calls from your code.
+This guide walks through the process of using the https://geode.apache.org/[{apache-geode-name}]'s data management system to cache
+certain calls from your application code.
 
-TIP: For more general knowledge of Pivotal GemFire concepts and accessing data from Pivotal GemFire, read through the guide,
-https://spring.io/guides/gs/accessing-data-gemfire/[Accessing Data with Pivotal GemFire].
+TIP: For more general knowledge of {apache-geode-name} concepts and accessing data from {apache-geode-name},
+read through the guide, https://spring.io/guides/gs/accessing-data-gemfire/[Accessing Data with {apache-geode-name}].
 
 == What you'll build
 
-You'll build a service that requests quotes from a CloudFoundry hosted Quote service and caches them in Pivotal GemFire.
+You'll build a service that requests quotes from a CloudFoundry hosted Quote service
+and caches them in {apache-geode-name}.
 
 Then, you'll see that fetching the same quote again eliminates the expensive call to the Quote service since
-Spring's Cache Abstraction, backed by Pivotal GemFire, will be used to cache the results, given the same request.
+Spring's Cache Abstraction, backed by {apache-geode-name}, will be used to cache the results, given the same request.
 
 The Quote service is located at...
 
@@ -131,7 +134,7 @@ constantly looking up the same data, caching the results can improve your perfor
 [[executable]]
 == Make the application executable
 
-Although Pivotal GemFire caching can be embedded in web apps and WAR files, the simpler approach demonstrated below
+Although {apache-geode-name} caching can be embedded in web apps and WAR files, the simpler approach demonstrated below
 creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java
 `main()` method.
 
@@ -145,13 +148,13 @@ include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/
 
 At the top of the configuration is a single, vital annotation: `@EnableGemfireCaching`. This turns on caching (i.e. is
 meta-annotated with _Spring's_ `@EnableCaching` annotation) and declares additional, important beans in the background
-to support caching using Pivotal GemFire as the caching provider.
+to support caching using {apache-geode-name} as the caching provider.
 
 The first bean is an instance of `QuoteService` used to access the Quotes REST-ful Web service.
 
 The other two are needed to cache Quotes and perform the actions of the application.
 
-- `quotesRegion` defines a Pivotal GemFire `LOCAL` client Region inside the cache to store quotes.
+- `quotesRegion` defines a {apache-geode-name} `LOCAL` client Region inside the cache to store quotes.
 It is specifically named "Quotes" to match the usage of `@Cacheable("Quotes")` on our `QuoteService` method.
 - `runner` is an instance of the _Spring Boot_ `ApplicationRunner` interface used to run our application.
 
