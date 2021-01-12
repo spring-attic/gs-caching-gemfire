@@ -19,13 +19,6 @@
         <spring-shell.version>1.2.0.RELEASE</spring-shell.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>spring-releases</id>
-            <url>https://repo.spring.io/libs-release</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>javax.cache</groupId>
