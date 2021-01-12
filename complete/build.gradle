@@ -1,38 +1,26 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.4.1")
-    }
-}
-
 plugins {
-    id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'java'
 }
 
-apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
 
+group = "org.springframework"
+version = "0.1.0"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-
-bootJar {
-    baseName = 'gs-caching-gemfire'
-    version =  '0.1.0'
-}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compile("org.springframework.boot:spring-boot-starter")
-    compile("org.springframework.data:spring-data-geode")
-    compile("com.fasterxml.jackson.core:jackson-databind")
-    compile("org.projectlombok:lombok")
-    runtime("javax.cache:cache-api")
-    runtime("org.springframework.shell:spring-shell:1.2.0.RELEASE")
+    implementation "org.springframework.boot:spring-boot-starter"
+    implementation "org.springframework.data:spring-data-geode"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "org.projectlombok:lombok"
+    runtimeOnly "javax.cache:cache-api"
+    runtimeOnly "org.springframework.shell:spring-shell:1.2.0.RELEASE"
 }
