@@ -34,7 +34,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter") {
         exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
     }
-    compile("org.springframework.data:spring-data-gemfire")
+    compile("org.springframework.data:spring-data-geode")
     compile("com.fasterxml.jackson.core:jackson-databind")
     compile("org.projectlombok:lombok")
     runtime("javax.cache:cache-api")
