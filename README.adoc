@@ -39,9 +39,9 @@ GET /api/{id}    - get specific quote
 == What you'll need
 
 :java_version: 1.8
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/prereq_editor_jdk_buildtools.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/prereq_editor_jdk_buildtools.adoc[]
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/how_to_complete_this_guide.adoc[]
 
 [[scratch]]
 == Starting with Spring Initializr
@@ -163,7 +163,7 @@ creates a standalone application. You package everything in a single, executable
 include::complete/src/main/java/hello/Application.java[]
 ----
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-application.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/spring-boot-application.adoc[]
 
 At the top of the configuration is a single, vital annotation: `@EnableGemfireCaching`. This turns on caching (i.e. is
 meta-annotated with _Spring's_ `@EnableCaching` annotation) and declares additional, important beans in the background
@@ -187,9 +187,9 @@ For demonstration purposes, the call to the `QuoteService` is wrapped in a separ
 `Application` class) to capture the time to make the service call. This lets you see exactly how long any one request
 is taking.
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/build_an_executable_jar_subhead.adoc[]
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/build_an_executable_jar_with_both.adoc[]
 
 Logging output is displayed. The service should be up and running within a few seconds.
 
@@ -221,4 +221,4 @@ The following guides may also be helpful:
 * https://spring.io/guides/gs/serving-web-content/[Serving Web Content with Spring MVC]
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot]
 
-include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/footer.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/main/footer.adoc[]
