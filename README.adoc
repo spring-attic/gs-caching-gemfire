@@ -1,5 +1,5 @@
 :apache-geode-name: Apache Geode
-:spring-boot-version: 2.4.1
+:spring-boot-version: 2.5.6
 :EnableAutoConfiguration: http://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/org/springframework/boot/autoconfigure/EnableAutoConfiguration.html
 :SpringApplication: http://docs.spring.io/spring-boot/docs/{spring-boot-version}/api/org/springframework/boot/SpringApplication.html
 :toc:
@@ -24,7 +24,7 @@ Spring's Cache Abstraction, backed by {apache-geode-name}, will be used to cache
 The Quote service is located at...
 
 ....
-http://gturnquist-quoters.cfapps.io
+https://quoters.apps.pcfone.io
 ....
 
 The Quote service has the following API...
@@ -121,7 +121,7 @@ Your next step is to create a service class that queries for quotes.
 include::complete/src/main/java/hello/QuoteService.java[]
 ----
 
-The `QuoteService` uses _Spring's_ `RestTemplate` to query the Quote service's http://gturnquist-quoters.cfapps.io/api[API].
+The `QuoteService` uses _Spring's_ `RestTemplate` to query the Quote service's https://quoters.apps.pcfone.io/api[API].
 The Quote service returns a JSON object, but _Spring_ uses Jackson to bind the data to a `QuoteResponse` and ultimately,
 a `Quote` object.
 
