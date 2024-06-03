@@ -7,6 +7,8 @@
 :source-highlighter: prettify
 :project_id: gs-caching-gemfire
 
+# This repository is no longer maintained. 
+
 This guide walks through the process of using the https://geode.apache.org/[{apache-geode-name}]'s data management system to cache
 certain calls from your application code.
 
